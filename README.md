@@ -1,6 +1,17 @@
-# Aruna Flow - Yoga Studio Website
+# 🧘 Aruna Flow - Yoga Studio Website
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/YOUR_USERNAME/aruna-flow-yoga)
 
 A modern, fully responsive yoga studio website built with React, TypeScript, and TailwindCSS. Features include multi-language support (Ukrainian/English), animated UI components, booking forms with Telegram integration, and a complete schedule management system.
+
+## 🚀 Quick Deploy
+
+**[See QUICK_START.md](./QUICK_START.md)** for 5-minute deployment guide!
+
+## 📸 Preview
+
+- **Live Demo:** Coming soon after your deployment!
+- **Telegram Bot:** @Obsidian2580Bot
 
 ## Features
 
