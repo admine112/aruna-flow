@@ -69,24 +69,47 @@ const BookingForm: React.FC = () => {
     e.preventDefault();
     setStatus('sending');
 
+    console.log('📤 Отправка формы:', formData);
+
     try {
       const response = await sendToTelegram({
         type: 'booking',
         ...formData,
       });
 
+      console.log('📬 Ответ сервера:', response);
+
       if (response.ok) {
         setStatus('success');
+        console.log('✅ Форма успешно отправлена');
         setFormData({ name: '', email: '', phone: '', comment: '' });
         setTimeout(() => setStatus('idle'), 5000);
       } else {
         setStatus('error');
+        console.error('❌ Ошибка отправки формы');
         setTimeout(() => setStatus('idle'), 5000);
       }
     } catch (error) {
       setStatus('error');
+      console.error('❌ Исключение при отправке:', error);
       setTimeout(() => setStatus('idle'), 5000);
     }
+  };
+
+  const handleQuickTest = async () => {
+    console.log('🧪 Быстрый тест отправки');
+    setFormData({
+      name: 'Тестовый Пользователь',
+      email: 'test@example.com',
+      phone: '+380671234567',
+      comment: 'Тестовое сообщение - быстрая проверка'
+    });
+    setTimeout(() => {
+      const form = document.querySelector('form');
+      if (form) {
+        form.requestSubmit();
+      }
+    }, 100);
   };
 
   return (
@@ -97,9 +120,21 @@ const BookingForm: React.FC = () => {
           isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
         }`}
       >
-        <h2 className="text-2xl md:text-3xl font-serif text-stone-800 mb-6 text-center">
-          {t.contacts.form.title}
-        </h2>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl md:text-3xl font-serif text-stone-800">
+            {t.contacts.form.title}
+          </h2>
+          {import.meta.env.DEV && (
+            <button
+              type="button"
+              onClick={handleQuickTest}
+              className="px-4 py-2 bg-purple-500 text-white rounded-lg text-sm font-medium hover:bg-purple-600 transition-colors"
+              title="Быстрый тест (только в dev режиме)"
+            >
+              🧪 Тест
+            </button>
+          )}
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>

@@ -7,10 +7,16 @@ const app = express();
 const PORT = 3001;
 
 const TELEGRAM_BOT_TOKEN = '8149651558:AAEcCMGUzcEDULbcGHbk0lCMhk_S51GUBJo';
-const TELEGRAM_CHAT_ID = '8149651558';
+const TELEGRAM_CHAT_ID = '944549036';
 
 app.use(cors());
 app.use(express.json());
+
+// Логирование всех запросов
+app.use((req, res, next) => {
+  console.log(`📥 ${req.method} ${req.path}`);
+  next();
+});
 
 app.post('/api/send-telegram', async (req, res) => {
   try {
