@@ -6,8 +6,9 @@ import { Home } from './pages/Home';
 import { Schedule } from './pages/Schedule';
 import { About } from './pages/About';
 import { Contacts } from './pages/Contacts';
+import { OrderConfirmation } from './pages/OrderConfirmation';
 
-type Page = 'home' | 'schedule' | 'about' | 'contacts';
+type Page = 'home' | 'schedule' | 'about' | 'contacts' | 'order-confirmation';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<Page>('home');
@@ -29,7 +30,9 @@ function App() {
       case 'about':
         return <About onNavigate={handleNavigate} />;
       case 'contacts':
-        return <Contacts />;
+        return <Contacts onNavigate={handleNavigate} />;
+      case 'order-confirmation':
+        return <OrderConfirmation onNavigate={handleNavigate} />;
       default:
         return <Home onNavigate={handleNavigate} />;
     }

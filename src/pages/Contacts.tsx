@@ -5,6 +5,7 @@ import { MapPin, Phone, Mail, Clock, Send, MessageCircle } from 'lucide-react';
 import { sendToTelegram } from '../utils/api';
 import { instructors, getInstructorById } from '../data/instructors';
 import { yogaClasses, getClassById } from '../data/classes';
+import { getScheduledClassById } from '../data/schedule';
 
 interface FormData {
   name: string;
@@ -13,6 +14,7 @@ interface FormData {
   comment: string;
   instructor?: string;
   class?: string;
+  scheduledClass?: string;
 }
 
 interface ChatMessage {
@@ -21,12 +23,16 @@ interface ChatMessage {
   sender: 'user' | 'admin';
 }
 
-export const Contacts: React.FC = () => {
+interface ContactsProps {
+  onNavigate?: (page: string) => void;
+}
+
+export const Contacts: React.FC<ContactsProps> = ({ onNavigate }) => {
   return (
     <div className="pt-16 md:pt-20 min-h-screen bg-gradient-to-br from-stone-50 to-amber-50">
       <ContactHeader />
       <div className="pb-8 md:pb-16">
-        <BookingForm />
+        <BookingForm onNavigate={onNavigate} />
         <ContactInfo />
         <CallbackForm />
         <NewsletterForm />
@@ -58,7 +64,11 @@ const ContactHeader: React.FC = () => {
   );
 };
 
-const BookingForm: React.FC = () => {
+interface BookingFormProps {
+  onNavigate?: (page: string) => void;
+}
+
+const BookingForm: React.FC<BookingFormProps> = ({ onNavigate }) => {
   const { t, language } = useLanguage();
   const { ref, isVisible } = useScrollAnimation();
   const [formData, setFormData] = useState<FormData>({
@@ -68,6 +78,7 @@ const BookingForm: React.FC = () => {
     comment: '',
     instructor: '',
     class: '',
+    scheduledClass: '',
   });
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
 
@@ -75,17 +86,20 @@ const BookingForm: React.FC = () => {
   useEffect(() => {
     const selectedInstructor = localStorage.getItem('selectedInstructor');
     const selectedClass = localStorage.getItem('selectedClass');
+    const selectedScheduledClass = localStorage.getItem('selectedScheduledClass');
     
-    if (selectedInstructor || selectedClass) {
+    if (selectedInstructor || selectedClass || selectedScheduledClass) {
       setFormData(prev => ({
         ...prev,
         instructor: selectedInstructor || '',
         class: selectedClass || '',
+        scheduledClass: selectedScheduledClass || '',
       }));
       
       // Очищаем localStorage после загрузки
       localStorage.removeItem('selectedInstructor');
       localStorage.removeItem('selectedClass');
+      localStorage.removeItem('selectedScheduledClass');
     }
   }, []);
 
@@ -100,9 +114,22 @@ const BookingForm: React.FC = () => {
       });
 
       if (response.ok) {
-        setStatus('success');
-        setFormData({ name: '', email: '', phone: '', comment: '', instructor: '', class: '' });
-        setTimeout(() => setStatus('idle'), 5000);
+        // Сохраняем данные заказа в localStorage для страницы подтверждения
+        const orderData = {
+          ...formData,
+          timestamp: new Date().toISOString()
+        };
+        localStorage.setItem('lastOrder', JSON.stringify(orderData));
+        
+        // Перенаправляем на страницу подтверждения
+        if (onNavigate) {
+          onNavigate('order-confirmation');
+        } else {
+          setStatus('success');
+          setTimeout(() => setStatus('idle'), 5000);
+        }
+        
+        setFormData({ name: '', email: '', phone: '', comment: '', instructor: '', class: '', scheduledClass: '' });
       } else {
         setStatus('error');
         setTimeout(() => setStatus('idle'), 5000);

@@ -28,15 +28,18 @@ app.post('/api/send-telegram', async (req, res) => {
       case 'booking':
         let instructorInfo = '';
         let classInfo = '';
+        let scheduledClassInfo = '';
         
         if (data.instructor) {
-          // Здесь можно добавить логику для получения имени инструктора по ID
           instructorInfo = `\n🧘‍♀️ Бажаний інструктор: ${data.instructor}`;
         }
         
         if (data.class) {
-          // Здесь можно добавить логику для получения названия занятия по ID
           classInfo = `\n📅 Бажане заняття: ${data.class}`;
+        }
+        
+        if (data.scheduledClass) {
+          scheduledClassInfo = `\n🗓️ Конкретне заняття: ${data.scheduledClass}`;
         }
         
         message = `
@@ -44,7 +47,7 @@ app.post('/api/send-telegram', async (req, res) => {
 
 👤 Ім'я: ${data.name}
 📧 Email: ${data.email}
-📞 Телефон: ${data.phone}${instructorInfo}${classInfo}
+📞 Телефон: ${data.phone}${instructorInfo}${classInfo}${scheduledClassInfo}
 💬 Коментар: ${data.comment || 'Немає'}
 
 Час: ${new Date().toLocaleString('uk-UA')}

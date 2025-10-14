@@ -4,8 +4,10 @@ import { useScrollAnimation } from '../hooks/useScrollAnimation';
 import { Calendar, User } from 'lucide-react';
 import { ClassModal } from '../components/ClassModal';
 import { InstructorModal } from '../components/InstructorModal';
+import { ScheduledClassModal } from '../components/ScheduledClassModal';
 import { yogaClasses, getClassById } from '../data/classes';
 import { getInstructorById } from '../data/instructors';
+import { scheduledClasses, getScheduledClassById, formatDate } from '../data/schedule';
 
 interface ScheduleProps {
   onNavigate: (page: string) => void;
@@ -27,8 +29,10 @@ export const Schedule: React.FC<ScheduleProps> = ({ onNavigate }) => {
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const [selectedClass, setSelectedClass] = useState<string | null>(null);
   const [selectedInstructor, setSelectedInstructor] = useState<string | null>(null);
+  const [selectedScheduledClass, setSelectedScheduledClass] = useState<string | null>(null);
   const [isClassModalOpen, setIsClassModalOpen] = useState(false);
   const [isInstructorModalOpen, setIsInstructorModalOpen] = useState(false);
+  const [isScheduledClassModalOpen, setIsScheduledClassModalOpen] = useState(false);
 
   const handleClassClick = (classId: string) => {
     setSelectedClass(classId);
@@ -62,6 +66,21 @@ export const Schedule: React.FC<ScheduleProps> = ({ onNavigate }) => {
 
   const handleBookWithInstructor = (instructorId: string) => {
     localStorage.setItem('selectedInstructor', instructorId);
+    onNavigate('contacts');
+  };
+
+  const handleScheduledClassClick = (scheduledClassId: string) => {
+    setSelectedScheduledClass(scheduledClassId);
+    setIsScheduledClassModalOpen(true);
+  };
+
+  const handleCloseScheduledClassModal = () => {
+    setIsScheduledClassModalOpen(false);
+    setSelectedScheduledClass(null);
+  };
+
+  const handleBookScheduledClass = (scheduledClassId: string) => {
+    localStorage.setItem('selectedScheduledClass', scheduledClassId);
     onNavigate('contacts');
   };
 
@@ -253,13 +272,13 @@ export const Schedule: React.FC<ScheduleProps> = ({ onNavigate }) => {
           </div>
 
           <div className="grid gap-4 md:gap-6">
-            {filteredClasses.map((classItem, index) => (
-              <ClassCard
-                key={classItem.id}
-                classItem={classItem}
+            {scheduledClasses.map((scheduledClass, index) => (
+              <ScheduledClassCard
+                key={scheduledClass.id}
+                scheduledClass={scheduledClass}
                 index={index}
                 onBook={scrollToBooking}
-                onClassClick={handleClassClick}
+                onScheduledClassClick={handleScheduledClassClick}
               />
             ))}
           </div>
@@ -279,6 +298,14 @@ export const Schedule: React.FC<ScheduleProps> = ({ onNavigate }) => {
         isOpen={isInstructorModalOpen}
         onClose={handleCloseInstructorModal}
         onBookWithInstructor={handleBookWithInstructor}
+      />
+
+      <ScheduledClassModal
+        scheduledClass={selectedScheduledClass ? getScheduledClassById(selectedScheduledClass) || null : null}
+        isOpen={isScheduledClassModalOpen}
+        onClose={handleCloseScheduledClassModal}
+        onBookScheduledClass={handleBookScheduledClass}
+        onInstructorClick={handleInstructorClick}
       />
     </div>
   );
@@ -376,6 +403,118 @@ const ClassCard: React.FC<{
             >
               {t.schedule.book}
             </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ScheduledClassCard: React.FC<{
+  scheduledClass: any;
+  index: number;
+  onBook: () => void;
+  onScheduledClassClick: (scheduledClassId: string) => void;
+}> = ({ scheduledClass, index, onBook, onScheduledClassClick }) => {
+  const { language } = useLanguage();
+  const { ref, isVisible } = useScrollAnimation();
+  
+  const yogaClass = getClassById(scheduledClass.classId);
+  const instructor = getInstructorById(scheduledClass.instructor);
+  
+  if (!yogaClass || !instructor) return null;
+
+  const formattedDate = formatDate(scheduledClass.date, language);
+  const spotsLeft = scheduledClass.availableSpots;
+  const isAlmostFull = spotsLeft <= 3;
+  const isFull = spotsLeft === 0;
+
+  return (
+    <div
+      ref={ref}
+      className={`bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-500 hover:scale-[1.02] overflow-hidden cursor-pointer ${
+        isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'
+      }`}
+      style={{ transitionDelay: `${index * 50}ms` }}
+      onClick={() => onScheduledClassClick(scheduledClass.id)}
+    >
+      <div className="flex flex-col md:flex-row">
+        <div className="p-6 md:w-48 flex flex-col justify-center items-center md:items-start bg-gradient-to-br from-amber-50 to-amber-100">
+          <div className="text-center md:text-left">
+            <p className="text-lg font-bold text-stone-800">{formattedDate}</p>
+            <p className="text-2xl font-bold text-amber-700 mt-1">{scheduledClass.time}</p>
+            <p className="text-sm text-stone-600 mt-2">
+              {scheduledClass.duration} {language === 'uk' ? 'хв' : 'min'}
+            </p>
+            <div className="mt-3">
+              <span className={`px-2 py-1 rounded-full text-xs font-medium text-white ${
+                isFull 
+                  ? 'bg-red-500' 
+                  : isAlmostFull 
+                    ? 'bg-orange-500' 
+                    : 'bg-green-500'
+              }`}>
+                {isFull 
+                  ? (language === 'uk' ? 'Заповнено' : 'Full')
+                  : `${spotsLeft} ${language === 'uk' ? 'місць' : 'spots'}`
+                }
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex-1 p-6">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-3">
+                <h3 className="text-2xl font-semibold text-stone-800 hover:text-amber-600 transition-colors">
+                  {yogaClass.name[language]}
+                </h3>
+                <span className="px-3 py-1 rounded-full text-xs font-medium text-white bg-gradient-to-r from-amber-400 to-amber-600">
+                  {scheduledClass.price[language]}
+                </span>
+              </div>
+
+              <p className="text-stone-600 mb-3 leading-relaxed">
+                {yogaClass.description[language].substring(0, 120)}...
+              </p>
+
+              <div className="flex flex-wrap gap-4 text-sm text-stone-600">
+                <div className="flex items-center gap-2">
+                  <User size={16} className="text-amber-600" />
+                  <span className="hover:text-amber-600 transition-colors">
+                    {instructor.name[language]}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Calendar size={16} className="text-amber-600" />
+                  <span>{yogaClass.level[language]}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onScheduledClassClick(scheduledClass.id);
+                }}
+                className="px-4 py-2 bg-amber-100 text-amber-700 rounded-lg font-medium hover:bg-amber-200 transition-all duration-300 text-sm"
+              >
+                {language === 'uk' ? 'Детальніше' : 'Learn More'}
+              </button>
+              {!isFull && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onBook();
+                  }}
+                  className="px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-lg font-medium shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 whitespace-nowrap"
+                >
+                  {language === 'uk' ? 'Записатися' : 'Book Now'}
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
