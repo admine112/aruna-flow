@@ -1,14 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
-import { MapPin, Phone, Mail, Clock, Send, Loader } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Send, MessageCircle } from 'lucide-react';
 import { sendToTelegram } from '../utils/api';
+import { instructors, getInstructorById } from '../data/instructors';
+import { yogaClasses, getClassById } from '../data/classes';
 
 interface FormData {
   name: string;
   email: string;
   phone: string;
   comment: string;
+  instructor?: string;
+  class?: string;
 }
 
 interface ChatMessage {
@@ -55,15 +59,35 @@ const ContactHeader: React.FC = () => {
 };
 
 const BookingForm: React.FC = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { ref, isVisible } = useScrollAnimation();
   const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
     phone: '',
     comment: '',
+    instructor: '',
+    class: '',
   });
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
+
+  // Загружаем предвыбранные данные из localStorage
+  useEffect(() => {
+    const selectedInstructor = localStorage.getItem('selectedInstructor');
+    const selectedClass = localStorage.getItem('selectedClass');
+    
+    if (selectedInstructor || selectedClass) {
+      setFormData(prev => ({
+        ...prev,
+        instructor: selectedInstructor || '',
+        class: selectedClass || '',
+      }));
+      
+      // Очищаем localStorage после загрузки
+      localStorage.removeItem('selectedInstructor');
+      localStorage.removeItem('selectedClass');
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,7 +101,7 @@ const BookingForm: React.FC = () => {
 
       if (response.ok) {
         setStatus('success');
-        setFormData({ name: '', email: '', phone: '', comment: '' });
+        setFormData({ name: '', email: '', phone: '', comment: '', instructor: '', class: '' });
         setTimeout(() => setStatus('idle'), 5000);
       } else {
         setStatus('error');
@@ -139,6 +163,48 @@ const BookingForm: React.FC = () => {
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
               className="w-full px-4 py-3 rounded-lg border border-stone-300 focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none transition-all"
             />
+          </div>
+
+          {/* Выбор инструктора */}
+          <div>
+            <label className="block text-sm font-medium text-stone-700 mb-2">
+              {language === 'uk' ? 'Бажаний інструктор (опціонально)' : 'Preferred Instructor (optional)'}
+            </label>
+            <select
+              value={formData.instructor}
+              onChange={(e) => setFormData({ ...formData, instructor: e.target.value })}
+              className="w-full px-4 py-3 rounded-lg border border-stone-300 focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none transition-all bg-white"
+            >
+              <option value="">
+                {language === 'uk' ? 'Оберіть інструктора...' : 'Select instructor...'}
+              </option>
+              {instructors.map((instructor) => (
+                <option key={instructor.id} value={instructor.id}>
+                  {instructor.name[language]} - {instructor.specialization[language]}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Выбор занятия */}
+          <div>
+            <label className="block text-sm font-medium text-stone-700 mb-2">
+              {language === 'uk' ? 'Бажане заняття (опціонально)' : 'Preferred Class (optional)'}
+            </label>
+            <select
+              value={formData.class}
+              onChange={(e) => setFormData({ ...formData, class: e.target.value })}
+              className="w-full px-4 py-3 rounded-lg border border-stone-300 focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none transition-all bg-white"
+            >
+              <option value="">
+                {language === 'uk' ? 'Оберіть заняття...' : 'Select class...'}
+              </option>
+              {yogaClasses.map((yogaClass) => (
+                <option key={yogaClass.id} value={yogaClass.id}>
+                  {yogaClass.name[language]} - {yogaClass.time} ({yogaClass.duration} {language === 'uk' ? 'хв' : 'min'})
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>

@@ -51,6 +51,20 @@ export const Schedule: React.FC<ScheduleProps> = ({ onNavigate }) => {
     setSelectedInstructor(null);
   };
 
+  const handleBookClass = (classId: string, instructorId?: string) => {
+    // Сохраняем выбранное занятие и инструктора в localStorage
+    localStorage.setItem('selectedClass', classId);
+    if (instructorId) {
+      localStorage.setItem('selectedInstructor', instructorId);
+    }
+    onNavigate('contacts');
+  };
+
+  const handleBookWithInstructor = (instructorId: string) => {
+    localStorage.setItem('selectedInstructor', instructorId);
+    onNavigate('contacts');
+  };
+
   const classes: ClassItem[] = [
     {
       id: 1,
@@ -257,12 +271,14 @@ export const Schedule: React.FC<ScheduleProps> = ({ onNavigate }) => {
         isOpen={isClassModalOpen}
         onClose={handleCloseClassModal}
         onInstructorClick={handleInstructorClick}
+        onBookClass={handleBookClass}
       />
 
       <InstructorModal
         instructor={selectedInstructor ? getInstructorById(selectedInstructor) || null : null}
         isOpen={isInstructorModalOpen}
         onClose={handleCloseInstructorModal}
+        onBookWithInstructor={handleBookWithInstructor}
       />
     </div>
   );

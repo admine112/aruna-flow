@@ -5,7 +5,11 @@ import { Award, Heart, Sparkles } from 'lucide-react';
 import { InstructorModal } from '../components/InstructorModal';
 import { instructors, getInstructorById } from '../data/instructors';
 
-export const About: React.FC = () => {
+interface AboutProps {
+  onNavigate?: (page: string) => void;
+}
+
+export const About: React.FC<AboutProps> = ({ onNavigate }) => {
   const [selectedInstructor, setSelectedInstructor] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -19,6 +23,12 @@ export const About: React.FC = () => {
     setSelectedInstructor(null);
   };
 
+  const handleBookWithInstructor = (instructorId: string) => {
+    // Сохраняем выбранного инструктора в localStorage для передачи в форму
+    localStorage.setItem('selectedInstructor', instructorId);
+    onNavigate && onNavigate('contacts');
+  };
+
   return (
     <div className="pt-16 md:pt-20 min-h-screen bg-white">
       <PhilosophySection />
@@ -29,6 +39,7 @@ export const About: React.FC = () => {
         instructor={selectedInstructor ? getInstructorById(selectedInstructor) || null : null}
         isOpen={isModalOpen}
         onClose={handleCloseModal}
+        onBookWithInstructor={handleBookWithInstructor}
       />
     </div>
   );

@@ -10,6 +10,7 @@ interface ClassModalProps {
   isOpen: boolean;
   onClose: () => void;
   onInstructorClick: (instructorId: string) => void;
+  onBookClass?: (classId: string, instructorId?: string) => void;
 }
 
 export const ClassModal: React.FC<ClassModalProps> = ({
@@ -17,6 +18,7 @@ export const ClassModal: React.FC<ClassModalProps> = ({
   isOpen,
   onClose,
   onInstructorClick,
+  onBookClass,
 }) => {
   const { language } = useLanguage();
 
@@ -130,7 +132,10 @@ export const ClassModal: React.FC<ClassModalProps> = ({
         {/* CTA */}
         <div className="text-center pt-4 border-t border-stone-200">
           <button
-            onClick={onClose}
+            onClick={() => {
+              onBookClass && onBookClass(yogaClass.id, yogaClass.instructor);
+              onClose();
+            }}
             className="px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-lg font-medium hover:shadow-lg transition-all"
           >
             {language === 'uk' ? 'Записатися на заняття' : 'Book This Class'}

@@ -8,12 +8,14 @@ interface InstructorModalProps {
   instructor: Instructor | null;
   isOpen: boolean;
   onClose: () => void;
+  onBookWithInstructor?: (instructorId: string) => void;
 }
 
 export const InstructorModal: React.FC<InstructorModalProps> = ({
   instructor,
   isOpen,
   onClose,
+  onBookWithInstructor,
 }) => {
   const { language } = useLanguage();
 
@@ -83,7 +85,10 @@ export const InstructorModal: React.FC<InstructorModalProps> = ({
             }
           </p>
           <button
-            onClick={onClose}
+            onClick={() => {
+              onBookWithInstructor && onBookWithInstructor(instructor.id);
+              onClose();
+            }}
             className="px-6 py-2 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-lg font-medium hover:shadow-lg transition-all"
           >
             {language === 'uk' ? 'Записатися на заняття' : 'Book a Class'}

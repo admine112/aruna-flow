@@ -26,12 +26,25 @@ app.post('/api/send-telegram', async (req, res) => {
 
     switch (type) {
       case 'booking':
+        let instructorInfo = '';
+        let classInfo = '';
+        
+        if (data.instructor) {
+          // Здесь можно добавить логику для получения имени инструктора по ID
+          instructorInfo = `\n🧘‍♀️ Бажаний інструктор: ${data.instructor}`;
+        }
+        
+        if (data.class) {
+          // Здесь можно добавить логику для получения названия занятия по ID
+          classInfo = `\n📅 Бажане заняття: ${data.class}`;
+        }
+        
         message = `
 🧘 <b>Нова заявка на заняття</b>
 
 👤 Ім'я: ${data.name}
 📧 Email: ${data.email}
-📞 Телефон: ${data.phone}
+📞 Телефон: ${data.phone}${instructorInfo}${classInfo}
 💬 Коментар: ${data.comment || 'Немає'}
 
 Час: ${new Date().toLocaleString('uk-UA')}

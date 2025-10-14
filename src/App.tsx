@@ -27,7 +27,7 @@ function App() {
       case 'schedule':
         return <Schedule onNavigate={handleNavigate} />;
       case 'about':
-        return <About />;
+        return <About onNavigate={handleNavigate} />;
       case 'contacts':
         return <Contacts />;
       default:
