@@ -1,6 +1,7 @@
 // Локальный dev сервер для тестирования Telegram API
 import express from 'express';
 import cors from 'cors';
+import fetch from 'node-fetch';
 
 const app = express();
 const PORT = 3001;
@@ -81,15 +82,21 @@ ${data.message}
       }),
     });
 
+    const result = await response.json();
+    
     if (!response.ok) {
-      throw new Error('Failed to send message to Telegram');
+      console.error('❌ Telegram API error:', result);
+      throw new Error(`Telegram API error: ${JSON.stringify(result)}`);
     }
 
     console.log('✅ Сообщение отправлено в Telegram:', type);
     return res.status(200).json({ success: true });
   } catch (error) {
-    console.error('❌ Ошибка отправки в Telegram:', error);
-    return res.status(500).json({ error: 'Failed to send message' });
+    console.error('❌ Ошибка отправки в Telegram:', error.message);
+    return res.status(500).json({ 
+      error: 'Failed to send message',
+      details: error.message 
+    });
   }
 });
 
