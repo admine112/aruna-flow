@@ -69,47 +69,24 @@ const BookingForm: React.FC = () => {
     e.preventDefault();
     setStatus('sending');
 
-    console.log('📤 Отправка формы:', formData);
-
     try {
       const response = await sendToTelegram({
         type: 'booking',
         ...formData,
       });
 
-      console.log('📬 Ответ сервера:', response);
-
       if (response.ok) {
         setStatus('success');
-        console.log('✅ Форма успешно отправлена');
         setFormData({ name: '', email: '', phone: '', comment: '' });
         setTimeout(() => setStatus('idle'), 5000);
       } else {
         setStatus('error');
-        console.error('❌ Ошибка отправки формы');
         setTimeout(() => setStatus('idle'), 5000);
       }
     } catch (error) {
       setStatus('error');
-      console.error('❌ Исключение при отправке:', error);
       setTimeout(() => setStatus('idle'), 5000);
     }
-  };
-
-  const handleQuickTest = async () => {
-    console.log('🧪 Быстрый тест отправки');
-    setFormData({
-      name: 'Тестовый Пользователь',
-      email: 'test@example.com',
-      phone: '+380671234567',
-      comment: 'Тестовое сообщение - быстрая проверка'
-    });
-    setTimeout(() => {
-      const form = document.querySelector('form');
-      if (form) {
-        form.requestSubmit();
-      }
-    }, 100);
   };
 
   return (
@@ -120,21 +97,9 @@ const BookingForm: React.FC = () => {
           isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
         }`}
       >
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl md:text-3xl font-serif text-stone-800">
-            {t.contacts.form.title}
-          </h2>
-          {import.meta.env.DEV && (
-            <button
-              type="button"
-              onClick={handleQuickTest}
-              className="px-4 py-2 bg-purple-500 text-white rounded-lg text-sm font-medium hover:bg-purple-600 transition-colors"
-              title="Быстрый тест (только в dev режиме)"
-            >
-              🧪 Тест
-            </button>
-          )}
-        </div>
+        <h2 className="text-2xl md:text-3xl font-serif text-stone-800 mb-6 text-center">
+          {t.contacts.form.title}
+        </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
@@ -421,6 +386,24 @@ const MiniChat: React.FC = () => {
           <h3 className="text-xl font-semibold text-white text-center">
             {t.contacts.chat.title}
           </h3>
+        </div>
+
+        <div className="bg-amber-50 border-l-4 border-amber-400 p-4">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-amber-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <p className="text-sm text-amber-700 font-medium">
+                ⚠️ УВАГА! Адміністратор не зможе вам відповісти через цей чат.
+              </p>
+              <p className="text-sm text-amber-600 mt-1">
+                Будь ласка, залиште ваші контактні дані для зворотного зв'язку.
+              </p>
+            </div>
+          </div>
         </div>
 
         <div className="h-64 overflow-y-auto p-4 space-y-3">

@@ -1,14 +1,35 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
 import { Award, Heart, Sparkles } from 'lucide-react';
+import { InstructorModal } from '../components/InstructorModal';
+import { instructors, getInstructorById } from '../data/instructors';
 
 export const About: React.FC = () => {
+  const [selectedInstructor, setSelectedInstructor] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleInstructorClick = (instructorId: string) => {
+    setSelectedInstructor(instructorId);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedInstructor(null);
+  };
+
   return (
     <div className="pt-16 md:pt-20 min-h-screen bg-white">
       <PhilosophySection />
-      <TeachersSection />
+      <TeachersSection onInstructorClick={handleInstructorClick} />
       <ValuesSection />
+      
+      <InstructorModal
+        instructor={selectedInstructor ? getInstructorById(selectedInstructor) || null : null}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+      />
     </div>
   );
 };
@@ -99,30 +120,13 @@ const PhilosophyContent: React.FC = () => {
   );
 };
 
-const TeachersSection: React.FC = () => {
+interface TeachersSectionProps {
+  onInstructorClick: (instructorId: string) => void;
+}
+
+const TeachersSection: React.FC<TeachersSectionProps> = ({ onInstructorClick }) => {
   const { t } = useLanguage();
   const { ref, isVisible } = useScrollAnimation();
-
-  const teachers = [
-    {
-      name: t.about.teachers.teacher1.name,
-      role: t.about.teachers.teacher1.role,
-      description: t.about.teachers.teacher1.description,
-      image: 'https://images.pexels.com/photos/3822906/pexels-photo-3822906.jpeg?auto=compress&cs=tinysrgb&w=400',
-    },
-    {
-      name: t.about.teachers.teacher2.name,
-      role: t.about.teachers.teacher2.role,
-      description: t.about.teachers.teacher2.description,
-      image: 'https://images.pexels.com/photos/4056723/pexels-photo-4056723.jpeg?auto=compress&cs=tinysrgb&w=400',
-    },
-    {
-      name: t.about.teachers.teacher3.name,
-      role: t.about.teachers.teacher3.role,
-      description: t.about.teachers.teacher3.description,
-      image: 'https://images.pexels.com/photos/3822621/pexels-photo-3822621.jpeg?auto=compress&cs=tinysrgb&w=400',
-    },
-  ];
 
   return (
     <section className="py-16 md:py-24 bg-white">
@@ -137,8 +141,13 @@ const TeachersSection: React.FC = () => {
         </h2>
 
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {teachers.map((teacher, index) => (
-            <TeacherCard key={index} teacher={teacher} index={index} />
+          {instructors.map((instructor, index) => (
+            <InstructorCard 
+              key={instructor.id} 
+              instructor={instructor} 
+              index={index}
+              onInstructorClick={onInstructorClick}
+            />
           ))}
         </div>
       </div>
@@ -146,29 +155,53 @@ const TeachersSection: React.FC = () => {
   );
 };
 
-const TeacherCard: React.FC<{ teacher: any; index: number }> = ({ teacher, index }) => {
+interface InstructorCardProps {
+  instructor: any;
+  index: number;
+  onInstructorClick: (instructorId: string) => void;
+}
+
+const InstructorCard: React.FC<InstructorCardProps> = ({ instructor, index, onInstructorClick }) => {
   const { ref, isVisible } = useScrollAnimation();
+  const { language } = useLanguage();
 
   return (
     <div
       ref={ref}
-      className={`bg-gradient-to-br from-stone-50 to-amber-50 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-500 hover:scale-105 ${
+      className={`bg-gradient-to-br from-stone-50 to-amber-50 rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-500 hover:scale-105 cursor-pointer ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
       }`}
       style={{ transitionDelay: `${index * 150}ms` }}
+      onClick={() => onInstructorClick(instructor.id)}
     >
       <div className="relative h-72 overflow-hidden">
-        <img
-          src={teacher.image}
-          alt={teacher.name}
-          className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
-        />
+        <div className="w-full h-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center">
+          <span className="text-6xl font-bold text-white">
+            {instructor.name[language].charAt(0)}
+          </span>
+        </div>
         <div className="absolute inset-0 bg-gradient-to-t from-stone-900/60 to-transparent" />
+        <div className="absolute bottom-4 left-4 right-4">
+          <h3 className="text-2xl font-semibold text-white mb-1">
+            {instructor.name[language]}
+          </h3>
+          <p className="text-amber-200 font-medium">
+            {instructor.specialization[language]}
+          </p>
+        </div>
       </div>
       <div className="p-6">
-        <h3 className="text-2xl font-semibold text-stone-800 mb-2">{teacher.name}</h3>
-        <p className="text-amber-700 font-medium mb-3">{teacher.role}</p>
-        <p className="text-stone-600 leading-relaxed">{teacher.description}</p>
+        <p className="text-stone-600 leading-relaxed mb-4">
+          {instructor.description[language].substring(0, 120)}...
+        </p>
+        <div className="flex items-center justify-between">
+          <span className="text-amber-600 font-medium text-sm">
+            {instructor.experience[language]}
+          </span>
+          <button className="text-amber-600 hover:text-amber-700 font-medium text-sm">
+            {language === 'uk' ? 'Детальніше →' : 'Learn more →'}
+          </button>
+        </div>
       </div>
     </div>
   );

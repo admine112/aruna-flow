@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
 import { Calendar, User } from 'lucide-react';
+import { ClassModal } from '../components/ClassModal';
+import { InstructorModal } from '../components/InstructorModal';
+import { yogaClasses, getClassById } from '../data/classes';
+import { getInstructorById } from '../data/instructors';
 
 interface ScheduleProps {
   onNavigate: (page: string) => void;
@@ -21,6 +25,31 @@ interface ClassItem {
 export const Schedule: React.FC<ScheduleProps> = ({ onNavigate }) => {
   const { t } = useLanguage();
   const [activeFilter, setActiveFilter] = useState<string>('all');
+  const [selectedClass, setSelectedClass] = useState<string | null>(null);
+  const [selectedInstructor, setSelectedInstructor] = useState<string | null>(null);
+  const [isClassModalOpen, setIsClassModalOpen] = useState(false);
+  const [isInstructorModalOpen, setIsInstructorModalOpen] = useState(false);
+
+  const handleClassClick = (classId: string) => {
+    setSelectedClass(classId);
+    setIsClassModalOpen(true);
+  };
+
+  const handleInstructorClick = (instructorId: string) => {
+    setSelectedInstructor(instructorId);
+    setIsInstructorModalOpen(true);
+    setIsClassModalOpen(false);
+  };
+
+  const handleCloseClassModal = () => {
+    setIsClassModalOpen(false);
+    setSelectedClass(null);
+  };
+
+  const handleCloseInstructorModal = () => {
+    setIsInstructorModalOpen(false);
+    setSelectedInstructor(null);
+  };
 
   const classes: ClassItem[] = [
     {
@@ -216,11 +245,25 @@ export const Schedule: React.FC<ScheduleProps> = ({ onNavigate }) => {
                 classItem={classItem}
                 index={index}
                 onBook={scrollToBooking}
+                onClassClick={handleClassClick}
               />
             ))}
           </div>
         </div>
       </section>
+
+      <ClassModal
+        yogaClass={selectedClass ? getClassById(selectedClass) || null : null}
+        isOpen={isClassModalOpen}
+        onClose={handleCloseClassModal}
+        onInstructorClick={handleInstructorClick}
+      />
+
+      <InstructorModal
+        instructor={selectedInstructor ? getInstructorById(selectedInstructor) || null : null}
+        isOpen={isInstructorModalOpen}
+        onClose={handleCloseInstructorModal}
+      />
     </div>
   );
 };
@@ -250,7 +293,8 @@ const ClassCard: React.FC<{
   classItem: ClassItem;
   index: number;
   onBook: () => void;
-}> = ({ classItem, index, onBook }) => {
+  onClassClick?: (classId: string) => void;
+}> = ({ classItem, index, onBook, onClassClick }) => {
   const { t } = useLanguage();
   const { ref, isVisible } = useScrollAnimation();
 
@@ -269,10 +313,11 @@ const ClassCard: React.FC<{
   return (
     <div
       ref={ref}
-      className={`bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-500 hover:scale-[1.02] overflow-hidden ${
+      className={`bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-500 hover:scale-[1.02] overflow-hidden cursor-pointer ${
         isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'
       }`}
       style={{ transitionDelay: `${index * 50}ms` }}
+      onClick={() => onClassClick && onClassClick(classItem.id.toString())}
     >
       <div className="flex flex-col md:flex-row">
         <div
