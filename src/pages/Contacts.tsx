@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
-import { MapPin, Phone, Mail, Clock, Send, MessageCircle } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Send, Loader } from 'lucide-react';
 import { sendToTelegram } from '../utils/api';
 import { instructors, getInstructorById } from '../data/instructors';
 import { yogaClasses, getClassById } from '../data/classes';
@@ -46,7 +46,7 @@ export const Contacts: React.FC<ContactsProps> = ({ onNavigate }) => {
 };
 
 const ContactHeader: React.FC = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { ref, isVisible } = useScrollAnimation();
 
   return (
