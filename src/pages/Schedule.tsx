@@ -250,7 +250,7 @@ export const Schedule: React.FC<ScheduleProps> = ({ onNavigate }) => {
   };
 
   return (
-    <div className="pt-16 md:pt-20 min-h-screen bg-gradient-to-br from-stone-50 to-amber-50">
+    <div className="pt-36 md:pt-44 min-h-screen bg-gradient-to-br from-stone-50 to-amber-50">
       <section className="py-12 md:py-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <ScheduleHeader />

@@ -9,7 +9,7 @@ interface HomeProps {
 
 export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
   return (
-    <div className="pt-16 md:pt-20">
+    <div className="pt-36 md:pt-44">
       <HeroSection onNavigate={onNavigate} />
       <BenefitsSection />
       <TestimonialsSection />

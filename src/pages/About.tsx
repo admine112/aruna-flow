@@ -30,7 +30,7 @@ export const About: React.FC<AboutProps> = ({ onNavigate }) => {
   };
 
   return (
-    <div className="pt-16 md:pt-20 min-h-screen bg-white">
+    <div className="pt-36 md:pt-44 min-h-screen bg-white">
       <PhilosophySection />
       <TeachersSection onInstructorClick={handleInstructorClick} />
       <ValuesSection />

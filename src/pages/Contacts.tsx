@@ -31,7 +31,7 @@ interface ContactsProps {
 
 export const Contacts: React.FC<ContactsProps> = ({ onNavigate }) => {
   return (
-    <div className="pt-16 md:pt-20 min-h-screen bg-gradient-to-br from-stone-50 to-amber-50">
+    <div className="pt-36 md:pt-44 min-h-screen bg-gradient-to-br from-stone-50 to-amber-50">
       <ContactHeader />
       <div className="pb-8 md:pb-16">
         <BookingForm onNavigate={onNavigate} />
@@ -151,17 +151,23 @@ const BookingForm: React.FC<BookingFormProps> = ({ onNavigate }) => {
           ...formData,
           timestamp: new Date().toISOString()
         };
-        localStorage.setItem('lastOrder', JSON.stringify(orderData));
         
-        // Перенаправляем на страницу подтверждения
+        // Сохраняем данные ПЕРЕД навигацией и сбросом формы
+        localStorage.setItem('lastOrder', JSON.stringify(orderData));
+        console.log('Order data saved:', orderData);
+        
+        // Сбрасываем форму
+        setFormData({ name: '', email: '', phone: '', comment: '', instructor: '', class: '', scheduledClass: '', preferredDate: '', preferredTime: '' });
+        
+        // Перенаправляем на страницу подтверждения с небольшой задержкой
         if (onNavigate) {
-          onNavigate('order-confirmation');
+          setTimeout(() => {
+            onNavigate('order-confirmation');
+          }, 200);
         } else {
           setStatus('success');
           setTimeout(() => setStatus('idle'), 5000);
         }
-        
-        setFormData({ name: '', email: '', phone: '', comment: '', instructor: '', class: '', scheduledClass: '', preferredDate: '', preferredTime: '' });
       } else {
         setStatus('error');
         setTimeout(() => setStatus('idle'), 5000);

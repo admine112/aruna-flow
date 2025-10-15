@@ -33,18 +33,25 @@ export const OrderConfirmation: React.FC<OrderConfirmationProps> = ({ onNavigate
     // Загружаем данные заказа из localStorage с небольшой задержкой
     const timer = setTimeout(() => {
       const savedOrderData = localStorage.getItem('lastOrder');
+      console.log('Loading order data:', savedOrderData);
       if (savedOrderData) {
-        setOrderData(JSON.parse(savedOrderData));
+        try {
+          const parsedData = JSON.parse(savedOrderData);
+          console.log('Parsed order data:', parsedData);
+          setOrderData(parsedData);
+        } catch (error) {
+          console.error('Error parsing order data:', error);
+        }
       }
       setIsLoading(false);
-    }, 100);
+    }, 300);
 
     return () => clearTimeout(timer);
   }, []);
 
   if (isLoading) {
     return (
-      <div className="pt-16 md:pt-20 min-h-screen bg-gradient-to-br from-green-50 to-amber-50 flex items-center justify-center">
+      <div className="pt-36 md:pt-44 min-h-screen bg-gradient-to-br from-green-50 to-amber-50 flex items-center justify-center">
         <div className="text-center">
           <p className="text-stone-600">
             {language === 'uk' ? 'Завантаження...' : 'Loading...'}
@@ -56,7 +63,7 @@ export const OrderConfirmation: React.FC<OrderConfirmationProps> = ({ onNavigate
 
   if (!orderData) {
     return (
-      <div className="pt-16 md:pt-20 min-h-screen bg-gradient-to-br from-green-50 to-amber-50 flex items-center justify-center">
+      <div className="pt-36 md:pt-44 min-h-screen bg-gradient-to-br from-green-50 to-amber-50 flex items-center justify-center">
         <div className="text-center">
           <p className="text-stone-600 mb-4">
             {language === 'uk' ? 'Дані замовлення не знайдено' : 'Order data not found'}
@@ -77,7 +84,7 @@ export const OrderConfirmation: React.FC<OrderConfirmationProps> = ({ onNavigate
   const scheduledClass = orderData.scheduledClass ? getScheduledClassById(orderData.scheduledClass) : null;
 
   return (
-    <div className="pt-16 md:pt-20 min-h-screen bg-gradient-to-br from-green-50 to-amber-50">
+    <div className="pt-36 md:pt-44 min-h-screen bg-gradient-to-br from-green-50 to-amber-50">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div
           ref={ref}
