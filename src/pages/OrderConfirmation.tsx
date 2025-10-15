@@ -13,6 +13,8 @@ interface OrderData {
   instructor?: string;
   class?: string;
   scheduledClass?: string;
+  preferredDate?: string;
+  preferredTime?: string;
   comment?: string;
   timestamp: string;
 }
@@ -143,6 +145,33 @@ export const OrderConfirmation: React.FC<OrderConfirmationProps> = ({ onNavigate
                     </p>
                     <p className="text-stone-700">{yogaClass.name[language]}</p>
                     <p className="text-sm text-stone-600">{yogaClass.level[language]}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Preferred Date and Time */}
+              {(orderData.preferredDate || orderData.preferredTime) && (
+                <div className="flex items-start p-4 bg-green-50 rounded-lg">
+                  <Calendar className="mr-3 text-green-600 mt-1" size={20} />
+                  <div>
+                    <p className="font-medium text-stone-800 mb-1">
+                      {language === 'uk' ? 'Бажаний час заняття' : 'Preferred Class Time'}
+                    </p>
+                    {orderData.preferredDate && (
+                      <p className="text-stone-700">
+                        📆 {new Date(orderData.preferredDate).toLocaleDateString(language === 'uk' ? 'uk-UA' : 'en-US', { 
+                          weekday: 'long', 
+                          day: 'numeric', 
+                          month: 'long', 
+                          year: 'numeric' 
+                        })}
+                      </p>
+                    )}
+                    {orderData.preferredTime && (
+                      <p className="text-stone-700">
+                        ⏰ {orderData.preferredTime}
+                      </p>
+                    )}
                   </div>
                 </div>
               )}

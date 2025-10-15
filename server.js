@@ -29,6 +29,8 @@ app.post('/api/send-telegram', async (req, res) => {
         let instructorInfo = '';
         let classInfo = '';
         let scheduledClassInfo = '';
+        let dateInfo = '';
+        let timeInfo = '';
         
         if (data.instructor) {
           instructorInfo = `\n🧘‍♀️ Бажаний інструктор: ${data.instructor}`;
@@ -42,15 +44,24 @@ app.post('/api/send-telegram', async (req, res) => {
           scheduledClassInfo = `\n🗓️ Конкретне заняття: ${data.scheduledClass}`;
         }
         
+        if (data.preferredDate) {
+          const date = new Date(data.preferredDate);
+          dateInfo = `\n📆 Бажана дата: ${date.toLocaleDateString('uk-UA', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}`;
+        }
+        
+        if (data.preferredTime) {
+          timeInfo = `\n⏰ Бажаний час: ${data.preferredTime}`;
+        }
+        
         message = `
 🧘 <b>Нова заявка на заняття</b>
 
 👤 Ім'я: ${data.name}
 📧 Email: ${data.email}
-📞 Телефон: ${data.phone}${instructorInfo}${classInfo}${scheduledClassInfo}
+📞 Телефон: ${data.phone}${instructorInfo}${classInfo}${scheduledClassInfo}${dateInfo}${timeInfo}
 💬 Коментар: ${data.comment || 'Немає'}
 
-Час: ${new Date().toLocaleString('uk-UA')}
+Час заявки: ${new Date().toLocaleString('uk-UA')}
         `;
         break;
 
