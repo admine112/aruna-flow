@@ -45,8 +45,7 @@ app.post('/api/send-telegram', async (req, res) => {
         }
         
         if (data.preferredDate) {
-          const date = new Date(data.preferredDate);
-          dateInfo = `\n📆 Бажана дата: ${date.toLocaleDateString('uk-UA', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}`;
+          dateInfo = `\n📆 Бажана дата: ${data.preferredDate}`;
         }
         
         if (data.preferredTime) {

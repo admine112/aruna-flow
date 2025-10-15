@@ -101,7 +101,8 @@ const BookingForm: React.FC<BookingFormProps> = ({ onNavigate }) => {
         const yogaClass = getClassById(scheduledClass.classId);
         newFormData.scheduledClass = selectedScheduledClass;
         newFormData.instructor = scheduledClass.instructor;
-        newFormData.preferredDate = scheduledClass.date;
+        // Форматируем дату в читаемый вид
+        newFormData.preferredDate = formatDate(scheduledClass.date, language);
         newFormData.preferredTime = scheduledClass.time;
         if (yogaClass) {
           newFormData.class = scheduledClass.classId;
@@ -303,10 +304,10 @@ const BookingForm: React.FC<BookingFormProps> = ({ onNavigate }) => {
               {language === 'uk' ? 'Бажана дата заняття (опціонально)' : 'Preferred Date (optional)'}
             </label>
             <input
-              type="date"
+              type="text"
+              placeholder={language === 'uk' ? 'Наприклад: 25 жовтня або 25.10.2024' : 'E.g.: October 25 or 25.10.2024'}
               value={formData.preferredDate}
               onChange={(e) => setFormData({ ...formData, preferredDate: e.target.value })}
-              min={new Date().toISOString().split('T')[0]}
               className="w-full px-4 py-3 rounded-lg border border-stone-300 focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none transition-all bg-white"
             />
           </div>

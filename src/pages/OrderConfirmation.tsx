@@ -159,12 +159,7 @@ export const OrderConfirmation: React.FC<OrderConfirmationProps> = ({ onNavigate
                     </p>
                     {orderData.preferredDate && (
                       <p className="text-stone-700">
-                        📆 {new Date(orderData.preferredDate).toLocaleDateString(language === 'uk' ? 'uk-UA' : 'en-US', { 
-                          weekday: 'long', 
-                          day: 'numeric', 
-                          month: 'long', 
-                          year: 'numeric' 
-                        })}
+                        📆 {orderData.preferredDate}
                       </p>
                     )}
                     {orderData.preferredTime && (
