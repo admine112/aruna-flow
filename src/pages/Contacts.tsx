@@ -5,7 +5,7 @@ import { MapPin, Phone, Mail, Clock, Send, MessageCircle } from 'lucide-react';
 import { sendToTelegram } from '../utils/api';
 import { instructors, getInstructorById } from '../data/instructors';
 import { yogaClasses, getClassById } from '../data/classes';
-import { getScheduledClassById } from '../data/schedule';
+import { getScheduledClassById, formatDate } from '../data/schedule';
 
 interface FormData {
   name: string;
@@ -88,13 +88,38 @@ const BookingForm: React.FC<BookingFormProps> = ({ onNavigate }) => {
     const selectedClass = localStorage.getItem('selectedClass');
     const selectedScheduledClass = localStorage.getItem('selectedScheduledClass');
     
+    let newFormData = { ...formData };
+    
+    // Если выбрано запланированное занятие - приоритет у него
+    if (selectedScheduledClass) {
+      const scheduledClass = getScheduledClassById(selectedScheduledClass);
+      if (scheduledClass) {
+        const yogaClass = getClassById(scheduledClass.classId);
+        newFormData.scheduledClass = selectedScheduledClass;
+        newFormData.instructor = scheduledClass.instructor;
+        if (yogaClass) {
+          newFormData.class = scheduledClass.classId;
+        }
+      }
+    }
+    // Если выбрано обычное занятие - заполняем занятие и инструктора
+    else if (selectedClass) {
+      const yogaClass = getClassById(selectedClass);
+      if (yogaClass) {
+        newFormData.class = selectedClass;
+        // Можно добавить логику для определения инструктора по умолчанию для занятия
+      }
+      if (selectedInstructor) {
+        newFormData.instructor = selectedInstructor;
+      }
+    }
+    // Если выбран только инструктор
+    else if (selectedInstructor) {
+      newFormData.instructor = selectedInstructor;
+    }
+    
     if (selectedInstructor || selectedClass || selectedScheduledClass) {
-      setFormData(prev => ({
-        ...prev,
-        instructor: selectedInstructor || '',
-        class: selectedClass || '',
-        scheduledClass: selectedScheduledClass || '',
-      }));
+      setFormData(newFormData);
       
       // Очищаем localStorage после загрузки
       localStorage.removeItem('selectedInstructor');
@@ -233,6 +258,38 @@ const BookingForm: React.FC<BookingFormProps> = ({ onNavigate }) => {
               ))}
             </select>
           </div>
+
+          {/* Отображение выбранного запланированного занятия */}
+          {formData.scheduledClass && (
+            <div>
+              <label className="block text-sm font-medium text-stone-700 mb-2">
+                {language === 'uk' ? 'Обране заняття' : 'Selected Class'}
+              </label>
+              <div className="w-full px-4 py-3 rounded-lg border border-amber-300 bg-amber-50">
+                {(() => {
+                  const scheduledClass = getScheduledClassById(formData.scheduledClass);
+                  const yogaClass = scheduledClass ? getClassById(scheduledClass.classId) : null;
+                  const instructor = scheduledClass ? getInstructorById(scheduledClass.instructor) : null;
+                  
+                  if (scheduledClass && yogaClass && instructor) {
+                    return (
+                      <div className="text-amber-800">
+                        <p className="font-medium">{yogaClass.name[language]}</p>
+                        <p className="text-sm">
+                          {formatDate(scheduledClass.date, language)} о {scheduledClass.time}
+                        </p>
+                        <p className="text-sm">
+                          {language === 'uk' ? 'Інструктор:' : 'Instructor:'} {instructor.name[language]}
+                        </p>
+                        <p className="text-sm font-medium">{scheduledClass.price[language]}</p>
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
+              </div>
+            </div>
+          )}
 
           <div>
             <label className="block text-sm font-medium text-stone-700 mb-2">

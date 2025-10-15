@@ -4,7 +4,7 @@ import { useLanguage } from '../context/LanguageContext';
 import { ScheduledClass, formatDate } from '../data/schedule';
 import { getClassById } from '../data/classes';
 import { getInstructorById } from '../data/instructors';
-import { Clock, Users, Calendar, DollarSign, User, MapPin } from 'lucide-react';
+import { Clock, Users, Calendar, User, MapPin } from 'lucide-react';
 
 interface ScheduledClassModalProps {
   scheduledClass: ScheduledClass | null;
@@ -82,7 +82,6 @@ export const ScheduledClassModal: React.FC<ScheduledClassModalProps> = ({
               </span>
             </div>
             <div className="flex items-center">
-              <DollarSign className="mr-1 text-amber-600" size={16} />
               <span className="font-bold text-amber-700">
                 {scheduledClass.price[language]}
               </span>
