@@ -60,7 +60,7 @@ const ContactHeader: React.FC = () => {
         {t.contacts.title}
       </h1>
       <p className="text-lg text-stone-600 max-w-2xl mx-auto">
-        Зв'яжіться з нами зручним для вас способом
+        {language === 'uk' ? 'Зв\'яжіться з нами зручним для вас способом' : 'Contact us in the way that suits you best'}
       </p>
     </div>
   );
@@ -557,7 +557,7 @@ const NewsletterForm: React.FC = () => {
 };
 
 const MiniChat: React.FC = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { ref, isVisible } = useScrollAnimation();
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -600,10 +600,16 @@ const MiniChat: React.FC = () => {
             </div>
             <div className="ml-3">
               <p className="text-sm text-amber-700 font-medium">
-                ⚠️ УВАГА! Адміністратор не зможе вам відповісти через цей чат.
+                {language === 'uk' 
+                  ? '⚠️ УВАГА! Адміністратор не зможе вам відповісти через цей чат.' 
+                  : '⚠️ WARNING! The administrator will not be able to reply to you through this chat.'
+                }
               </p>
               <p className="text-sm text-amber-600 mt-1">
-                Будь ласка, залиште ваші контактні дані для зворотного зв'язку.
+                {language === 'uk'
+                  ? 'Будь ласка, залиште ваші контактні дані для зворотного зв\'язку.'
+                  : 'Please leave your contact details for feedback.'
+                }
               </p>
             </div>
           </div>
@@ -612,7 +618,7 @@ const MiniChat: React.FC = () => {
         <div className="h-64 overflow-y-auto p-4 space-y-3">
           {messages.length === 0 ? (
             <p className="text-center text-stone-400 mt-8">
-              Напишіть ваше перше повідомлення
+              {language === 'uk' ? 'Напишіть ваше перше повідомлення' : 'Write your first message'}
             </p>
           ) : (
             messages.map((msg, idx) => (
