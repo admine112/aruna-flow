@@ -220,27 +220,52 @@ const InstructorCard: React.FC<InstructorCardProps> = ({ instructor, index, onIn
 
 const ValuesSection: React.FC = () => {
   const { ref, isVisible } = useScrollAnimation();
+  const { language } = useLanguage();
 
   const values = [
     {
       icon: '🧘',
-      title: 'Гармонія',
-      description: 'Баланс між тілом, розумом і душею',
+      title: {
+        uk: 'Гармонія',
+        en: 'Harmony'
+      },
+      description: {
+        uk: 'Баланс між тілом, розумом і душею',
+        en: 'Balance between body, mind and soul'
+      },
     },
     {
       icon: '✨',
-      title: 'Усвідомленість',
-      description: 'Присутність у моменті тут і зараз',
+      title: {
+        uk: 'Усвідомленість',
+        en: 'Mindfulness'
+      },
+      description: {
+        uk: 'Присутність у моменті тут і зараз',
+        en: 'Presence in the here and now'
+      },
     },
     {
       icon: '💚',
-      title: 'Турбота',
-      description: 'Індивідуальний підхід до кожного',
+      title: {
+        uk: 'Турбота',
+        en: 'Care'
+      },
+      description: {
+        uk: 'Індивідуальний підхід до кожного',
+        en: 'Individual approach to everyone'
+      },
     },
     {
       icon: '🌱',
-      title: 'Розвиток',
-      description: 'Постійне вдосконалення практики',
+      title: {
+        uk: 'Розвиток',
+        en: 'Growth'
+      },
+      description: {
+        uk: 'Постійне вдосконалення практики',
+        en: 'Continuous improvement of practice'
+      },
     },
   ];
 
@@ -253,12 +278,12 @@ const ValuesSection: React.FC = () => {
             isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
           }`}
         >
-          Наші цінності
+          {language === 'uk' ? 'Наші цінності' : 'Our Values'}
         </h2>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
           {values.map((value, index) => (
-            <ValueCard key={index} value={value} index={index} />
+            <ValueCard key={index} value={value} index={index} language={language} />
           ))}
         </div>
       </div>
@@ -266,7 +291,7 @@ const ValuesSection: React.FC = () => {
   );
 };
 
-const ValueCard: React.FC<{ value: any; index: number }> = ({ value, index }) => {
+const ValueCard: React.FC<{ value: any; index: number; language: 'uk' | 'en' }> = ({ value, index, language }) => {
   const { ref, isVisible } = useScrollAnimation();
 
   return (
@@ -278,8 +303,8 @@ const ValueCard: React.FC<{ value: any; index: number }> = ({ value, index }) =>
       style={{ transitionDelay: `${index * 100}ms` }}
     >
       <div className="text-5xl mb-4">{value.icon}</div>
-      <h3 className="text-xl font-semibold text-stone-800 mb-2">{value.title}</h3>
-      <p className="text-stone-600">{value.description}</p>
+      <h3 className="text-xl font-semibold text-stone-800 mb-2">{value.title[language]}</h3>
+      <p className="text-stone-600">{value.description[language]}</p>
     </div>
   );
 };
