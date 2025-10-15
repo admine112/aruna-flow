@@ -27,14 +27,32 @@ export const OrderConfirmation: React.FC<OrderConfirmationProps> = ({ onNavigate
   const { language } = useLanguage();
   const { ref, isVisible } = useScrollAnimation();
   const [orderData, setOrderData] = useState<OrderData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Загружаем данные заказа из localStorage
-    const savedOrderData = localStorage.getItem('lastOrder');
-    if (savedOrderData) {
-      setOrderData(JSON.parse(savedOrderData));
-    }
+    // Загружаем данные заказа из localStorage с небольшой задержкой
+    const timer = setTimeout(() => {
+      const savedOrderData = localStorage.getItem('lastOrder');
+      if (savedOrderData) {
+        setOrderData(JSON.parse(savedOrderData));
+      }
+      setIsLoading(false);
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, []);
+
+  if (isLoading) {
+    return (
+      <div className="pt-16 md:pt-20 min-h-screen bg-gradient-to-br from-green-50 to-amber-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-stone-600">
+            {language === 'uk' ? 'Завантаження...' : 'Loading...'}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (!orderData) {
     return (

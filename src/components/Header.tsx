@@ -42,7 +42,7 @@ export const Header: React.FC<HeaderProps> = ({ currentPage, onNavigate }) => {
             <img
               src="/aruna logo.png"
               alt="Aruna Flow Logo"
-              className="h-12 md:h-16 w-auto transition-transform hover:scale-105"
+              className="h-16 md:h-20 w-auto"
             />
           </div>
 
