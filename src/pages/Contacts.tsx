@@ -146,28 +146,32 @@ const BookingForm: React.FC<BookingFormProps> = ({ onNavigate }) => {
       });
 
       if (response.ok) {
+        setStatus('success');
+        
         // Сохраняем данные заказа в localStorage для страницы подтверждения
         const orderData = {
           ...formData,
           timestamp: new Date().toISOString()
         };
         
-        // Сохраняем данные ПЕРЕД навигацией и сбросом формы
+        // Сохраняем данные
         localStorage.setItem('lastOrder', JSON.stringify(orderData));
-        console.log('Order data saved:', orderData);
+        console.log('✅ Order data saved to localStorage:', orderData);
         
-        // Сбрасываем форму
-        setFormData({ name: '', email: '', phone: '', comment: '', instructor: '', class: '', scheduledClass: '', preferredDate: '', preferredTime: '' });
+        // Проверяем, что данные действительно сохранились
+        const savedCheck = localStorage.getItem('lastOrder');
+        console.log('✅ Verification - data in localStorage:', savedCheck);
         
-        // Перенаправляем на страницу подтверждения с небольшой задержкой
+        // Перенаправляем на страницу подтверждения
         if (onNavigate) {
-          setTimeout(() => {
-            onNavigate('order-confirmation');
-          }, 200);
-        } else {
-          setStatus('success');
-          setTimeout(() => setStatus('idle'), 5000);
+          console.log('🔄 Navigating to order-confirmation...');
+          onNavigate('order-confirmation');
         }
+        
+        // Сбрасываем форму ПОСЛЕ навигации
+        setTimeout(() => {
+          setFormData({ name: '', email: '', phone: '', comment: '', instructor: '', class: '', scheduledClass: '', preferredDate: '', preferredTime: '' });
+        }, 500);
       } else {
         setStatus('error');
         setTimeout(() => setStatus('idle'), 5000);

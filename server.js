@@ -20,6 +20,7 @@ app.use((req, res, next) => {
 
 app.post('/api/send-telegram', async (req, res) => {
   try {
+    console.log('📨 Получены данные:', JSON.stringify(req.body, null, 2));
     const { type, ...data } = req.body;
 
     let message = '';
