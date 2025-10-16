@@ -15,8 +15,6 @@ interface FormData {
   instructor?: string;
   class?: string;
   scheduledClass?: string;
-  preferredDate?: string;
-  preferredTime?: string;
 }
 
 interface ChatMessage {
@@ -81,8 +79,6 @@ const BookingForm: React.FC<BookingFormProps> = ({ onNavigate }) => {
     instructor: '',
     class: '',
     scheduledClass: '',
-    preferredDate: '',
-    preferredTime: '',
   });
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
 
@@ -101,9 +97,6 @@ const BookingForm: React.FC<BookingFormProps> = ({ onNavigate }) => {
         const yogaClass = getClassById(scheduledClass.classId);
         newFormData.scheduledClass = selectedScheduledClass;
         newFormData.instructor = scheduledClass.instructor;
-        // Форматируем дату в читаемый вид
-        newFormData.preferredDate = formatDate(scheduledClass.date, language);
-        newFormData.preferredTime = scheduledClass.time;
         if (yogaClass) {
           newFormData.class = scheduledClass.classId;
         }
@@ -170,7 +163,7 @@ const BookingForm: React.FC<BookingFormProps> = ({ onNavigate }) => {
         
         // Сбрасываем форму ПОСЛЕ навигации
         setTimeout(() => {
-          setFormData({ name: '', email: '', phone: '', comment: '', instructor: '', class: '', scheduledClass: '', preferredDate: '', preferredTime: '' });
+          setFormData({ name: '', email: '', phone: '', comment: '', instructor: '', class: '', scheduledClass: '' });
         }, 500);
       } else {
         setStatus('error');
@@ -307,52 +300,6 @@ const BookingForm: React.FC<BookingFormProps> = ({ onNavigate }) => {
               </div>
             </div>
           )}
-
-          {/* Выбор даты */}
-          <div>
-            <label className="block text-sm font-medium text-stone-700 mb-2">
-              {language === 'uk' ? 'Бажана дата заняття (опціонально)' : 'Preferred Date (optional)'}
-            </label>
-            <input
-              type="text"
-              placeholder={language === 'uk' ? 'Наприклад: 25 жовтня або 25.10.2024' : 'E.g.: October 25 or 25.10.2024'}
-              value={formData.preferredDate}
-              onChange={(e) => setFormData({ ...formData, preferredDate: e.target.value })}
-              className="w-full px-4 py-3 rounded-lg border border-stone-300 focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none transition-all bg-white"
-            />
-          </div>
-
-          {/* Выбор времени */}
-          <div>
-            <label className="block text-sm font-medium text-stone-700 mb-2">
-              {language === 'uk' ? 'Бажаний час заняття (опціонально)' : 'Preferred Time (optional)'}
-            </label>
-            <select
-              value={formData.preferredTime}
-              onChange={(e) => setFormData({ ...formData, preferredTime: e.target.value })}
-              className="w-full px-4 py-3 rounded-lg border border-stone-300 focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none transition-all bg-white"
-            >
-              <option value="">
-                {language === 'uk' ? 'Оберіть час...' : 'Select time...'}
-              </option>
-              <option value="06:00">06:00</option>
-              <option value="07:00">07:00</option>
-              <option value="08:00">08:00</option>
-              <option value="09:00">09:00</option>
-              <option value="10:00">10:00</option>
-              <option value="11:00">11:00</option>
-              <option value="12:00">12:00</option>
-              <option value="13:00">13:00</option>
-              <option value="14:00">14:00</option>
-              <option value="15:00">15:00</option>
-              <option value="16:00">16:00</option>
-              <option value="17:00">17:00</option>
-              <option value="18:00">18:00</option>
-              <option value="19:00">19:00</option>
-              <option value="20:00">20:00</option>
-              <option value="21:00">21:00</option>
-            </select>
-          </div>
 
           <div>
             <label className="block text-sm font-medium text-stone-700 mb-2">

@@ -30,8 +30,6 @@ app.post('/api/send-telegram', async (req, res) => {
         let instructorInfo = '';
         let classInfo = '';
         let scheduledClassInfo = '';
-        let dateInfo = '';
-        let timeInfo = '';
         
         if (data.instructor) {
           instructorInfo = `\n🧘‍♀️ Бажаний інструктор: ${data.instructor}`;
@@ -45,20 +43,12 @@ app.post('/api/send-telegram', async (req, res) => {
           scheduledClassInfo = `\n🗓️ Конкретне заняття: ${data.scheduledClass}`;
         }
         
-        if (data.preferredDate) {
-          dateInfo = `\n📆 Бажана дата: ${data.preferredDate}`;
-        }
-        
-        if (data.preferredTime) {
-          timeInfo = `\n⏰ Бажаний час: ${data.preferredTime}`;
-        }
-        
         message = `
 🧘 <b>Нова заявка на заняття</b>
 
 👤 Ім'я: ${data.name}
 📧 Email: ${data.email}
-📞 Телефон: ${data.phone}${instructorInfo}${classInfo}${scheduledClassInfo}${dateInfo}${timeInfo}
+📞 Телефон: ${data.phone}${instructorInfo}${classInfo}${scheduledClassInfo}
 💬 Коментар: ${data.comment || 'Немає'}
 
 Час заявки: ${new Date().toLocaleString('uk-UA')}
